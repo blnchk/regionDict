@@ -1,5 +1,7 @@
 package org.blinchik.regionsdirectory.service;
 
+import org.apache.coyote.BadRequestException;
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.blinchik.regionsdirectory.mapper.RegionMapper;
@@ -15,8 +17,12 @@ import java.util.List;
 @Service
 public class RegionRepositoryService {
 
+    private final SqlSessionFactory sqlSessionFactory;
+
     @Autowired
-    private SqlSessionFactory sqlSessionFactory;
+    public RegionRepositoryService(SqlSessionFactory sqlSessionFactory) {
+        this.sqlSessionFactory = sqlSessionFactory;
+    }
 
     @Cacheable("regions")
     public List<Region> getAllRegions() {
@@ -39,21 +45,25 @@ public class RegionRepositoryService {
     }
 
     @CachePut(value = "regions", key = "#region.id")
-    public Region addRegion(Region region) {
+    public Region addRegion(Region region) throws BadRequestException {
         try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
             sqlSession.getMapper(RegionMapper.class).insertRegion(region);
+        } catch (PersistenceException e) {
+            throw new BadRequestException("Произошла ошибка при попытке записи в базу данных, пожалуйста, проверьте свои данные.");
         }
         return getRegionById(region.getId()) ;
     }
 
     @CachePut(value = "regions", key = "#region.id")
-    public boolean updateRegion(Region region) {
+    public boolean updateRegion(Region region) throws BadRequestException {
         try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
             RegionMapper mapper = sqlSession.getMapper(RegionMapper.class);
             if (mapper.getRegionById(region.getId()) == null) {
                 return false;
             }
             mapper.updateRegion(region);
+        } catch (PersistenceException e) {
+            throw new BadRequestException("Произошла ошибка при попытке записи в базу данных, пожалуйста, проверьте свои данные.");
         }
         return true;
     }
