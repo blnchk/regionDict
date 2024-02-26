@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:regions
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: sa
+    generate-unique-name: false
+    name: regions
