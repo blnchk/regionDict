@@ -1,5 +1,6 @@
 package org.blinchik.regionsdirectory.controler;
 
+import org.apache.coyote.BadRequestException;
 import org.blinchik.regionsdirectory.model.Region;
 import org.blinchik.regionsdirectory.service.RegionRepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,16 +41,24 @@ public class RegionController {
 
     @PostMapping
     public ResponseEntity addRegion(@RequestBody Region region) {
-        Region result = regionService.addRegion(region);
-        return result != null ?
-                ResponseEntity.ok().body(String.format("Регион %s был успешно добавлен!", region.getShortName())) :
-                ResponseEntity.internalServerError().body("При добавлении региона возникла ошибка.");
+        try {
+            Region result = regionService.addRegion(region);
+            return result != null ?
+                    ResponseEntity.ok().body(String.format("Регион %s был успешно добавлен!", region.getShortName())) :
+                    ResponseEntity.internalServerError().body("При добавлении региона возникла ошибка со стороны сервера.");
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateRegion(@PathVariable Long id, @RequestBody Region region) {
         region.setId(id);
-        return regionService.updateRegion(region) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        try {
+            return regionService.updateRegion(region) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

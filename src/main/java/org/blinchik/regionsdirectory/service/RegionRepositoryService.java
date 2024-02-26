@@ -49,7 +49,7 @@ public class RegionRepositoryService {
         try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
             sqlSession.getMapper(RegionMapper.class).insertRegion(region);
         } catch (PersistenceException e) {
-            throw new BadRequestException("Произошла ошибка при попытке записи в базу данных, пожалуйста, проверьте свои данные.");
+            throw new BadRequestException("Произошла ошибка при попытке записи в базу данных, пожалуйста, проверьте свои данные.", e);
         }
         return getRegionById(region.getId()) ;
     }
@@ -63,7 +63,7 @@ public class RegionRepositoryService {
             }
             mapper.updateRegion(region);
         } catch (PersistenceException e) {
-            throw new BadRequestException("Произошла ошибка при попытке записи в базу данных, пожалуйста, проверьте свои данные.");
+            throw new BadRequestException("Произошла ошибка при попытке записи в базу данных, пожалуйста, проверьте свои данные.", e);
         }
         return true;
     }

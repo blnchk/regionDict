@@ -1,5 +1,7 @@
 package org.blinchik.regionsdirectory;
 
+import org.apache.coyote.BadRequestException;
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.blinchik.regionsdirectory.controler.RegionController;
 import org.blinchik.regionsdirectory.model.Region;
 import org.blinchik.regionsdirectory.service.RegionRepositoryService;
@@ -81,17 +83,22 @@ class RegionsDirectoryApplicationTests {
     }
 
     @Test
-    public void testAddRegion() {
+    public void testAddRegion() throws BadRequestException {
         Region region = new Region(1L, "Irkutsk", "Irk");
         when(regionService.addRegion(any())).thenReturn(region);
 
         ResponseEntity responseEntity = regionController.addRegion(region);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+        when(regionService.addRegion(any())).thenThrow(PersistenceException.class);
+        ResponseEntity responseEntityBR = regionController.addRegion(region);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntityBR.getStatusCode());
     }
 
     @Test
-    public void testUpdateRegion() {
+    public void testUpdateRegion() throws BadRequestException {
         Region region = new Region(1L, "Saint-Petersburg", "Spb");
         when(regionService.updateRegion(eq(region))).thenReturn(true);
 
@@ -102,6 +109,11 @@ class RegionsDirectoryApplicationTests {
         ResponseEntity responseEntityNot = regionController.updateRegion(24L, region);
 
         assertEquals(HttpStatus.NOT_FOUND, responseEntityNot.getStatusCode());
+
+        when(regionService.updateRegion(any())).thenThrow(PersistenceException.class);
+        ResponseEntity responseEntityBR = regionController.addRegion(region);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntityBR.getStatusCode());
     }
 
     @Test
