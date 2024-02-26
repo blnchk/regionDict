@@ -3,31 +3,31 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.blinchik.regionsdirectory.mapper.RegionMapper">
+    <resultMap id="regionMapping" type="org.blinchik.regionsdirectory.model.Region">
+        <result property="name" column="full_name"/>
+        <result property="shortName" column="short_name"/>
+    </resultMap>
 
-    <select id="getRegionById" parameterType="java.lang.Long" resultType="org.blinchik.regionsdirectory.model.Region">
+    <select id="getRegionById" resultMap="regionMapping" parameterType="java.lang.Long" resultType="org.blinchik.regionsdirectory.model.Region">
         SELECT * FROM regions WHERE id = #{id}
     </select>
 
-    <select id="getAllRegionsWithLimitAndSort" resultType="org.blinchik.regionsdirectory.model.Region">
+    <select id="getAllRegionsWithLimitAndSort" resultMap="regionMapping" resultType="org.blinchik.regionsdirectory.model.Region">
         SELECT * FROM regions
-        <if test="sortBy != null">
-            ORDER BY ${sortBy} <if test="order != null"> ${sortOrder} </if>
-        </if>
-        <if test="limit != null">
-            LIMIT #{limit}
-        </if>
+        ORDER BY ${sortBy} ${order}
+        LIMIT #{limit} OFFSET #{offset};
     </select>
 
-    <select id="getAllRegions" resultType="org.blinchik.regionsdirectory.model.Region">
+    <select id="getAllRegions" resultMap="regionMapping" resultType="org.blinchik.regionsdirectory.model.Region">
         SELECT * FROM regions
     </select>
 
-    <insert id="insertRegion" parameterType="org.blinchik.regionsdirectory.model.Region">
-        INSERT INTO regions (id, name) VALUES (#{id}, #{name})
+    <insert id="insertRegion" parameterType="org.blinchik.regionsdirectory.model.Region" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO regions (full_name, short_name) VALUES (#{name}, #{shortName})
     </insert>
 
     <update id="updateRegion" parameterType="org.blinchik.regionsdirectory.model.Region">
-        UPDATE regions SET name = #{name} WHERE id = #{id}
+        UPDATE regions SET full_name = #{name}, short_name = #{shortName} WHERE id = #{id}
     </update>
 
     <delete id="deleteRegionById" parameterType="java.lang.Long">
