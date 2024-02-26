@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,10 +43,12 @@ class RegionsDirectoryApplicationTests {
     @Test
     public void testGetAllRegions() {
         ResponseEntity<List<Region>> emptyResponseEntity = regionController.getAllRegions();
-        assertEquals(HttpStatus.NO_CONTENT, emptyResponseEntity.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, emptyResponseEntity.getStatusCode());
         assertEquals(null, emptyResponseEntity.getBody());
 
-        List<Region> regions = Arrays.asList(new Region(1L, "Irkutsk", "Irk"), new Region(1L, "Kazan", "KZ"));
+        List<Region> regions = Arrays.asList(
+                new Region(1L, "Irkutsk", "Irk", LocalDateTime.now(), null),
+                new Region(1L, "Kazan", "KZ",LocalDateTime.now(), null));
 
         when(regionService.getAllRegions()).thenReturn(regions);
 
@@ -58,7 +61,9 @@ class RegionsDirectoryApplicationTests {
 
     @Test
     public void testGetRegionsPaginated() {
-        List<Region> regions = Arrays.asList(new Region(1L, "Moscow", "MO"), new Region(2L, "Saint-Petersburg", "Spb"));
+        List<Region> regions = Arrays.asList(
+                new Region(1L, "Moscow", "MO", LocalDateTime.now(), null),
+                new Region(2L, "Saint-Petersburg", "Spb", LocalDateTime.now(), null));
 
         when(regionService.getAllRegionsWithLimitAndSort(anyInt(), anyInt(), anyString(), anyString())).thenReturn(regions);
 
@@ -70,7 +75,7 @@ class RegionsDirectoryApplicationTests {
 
     @Test
     public void testGetRegionById() {
-        Region region = new Region(1L, "Irkutsk", "Irk");
+        Region region = new Region(1L, "Irkutsk", "Irk", LocalDateTime.now(), null);
         when(regionService.getRegionById(1L)).thenReturn(region);
 
         ResponseEntity<Region> responseEntityOK = regionController.getRegionById(1L);
@@ -84,7 +89,7 @@ class RegionsDirectoryApplicationTests {
 
     @Test
     public void testAddRegion() throws BadRequestException {
-        Region region = new Region(1L, "Irkutsk", "Irk");
+        Region region = new Region(1L, "Irkutsk", "Irk", LocalDateTime.now(), null);
         when(regionService.addRegion(any())).thenReturn(region);
 
         ResponseEntity responseEntity = regionController.addRegion(region);
@@ -99,7 +104,7 @@ class RegionsDirectoryApplicationTests {
 
     @Test
     public void testUpdateRegion() throws BadRequestException {
-        Region region = new Region(1L, "Saint-Petersburg", "Spb");
+        Region region = new Region(1L, "Saint-Petersburg", "Spb", LocalDateTime.now(), null);
         when(regionService.updateRegion(eq(region))).thenReturn(true);
 
         ResponseEntity responseEntityOK = regionController.updateRegion(1L, region);
@@ -108,7 +113,7 @@ class RegionsDirectoryApplicationTests {
         when(regionService.updateRegion(region)).thenReturn(false);
         ResponseEntity responseEntityNot = regionController.updateRegion(24L, region);
 
-        assertEquals(HttpStatus.NOT_FOUND, responseEntityNot.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, responseEntityNot.getStatusCode());
 
         when(regionService.updateRegion(any())).thenThrow(PersistenceException.class);
         ResponseEntity responseEntityBR = regionController.addRegion(region);

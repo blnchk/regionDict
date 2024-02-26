@@ -6,6 +6,8 @@
     <resultMap id="regionMapping" type="org.blinchik.regionsdirectory.model.Region">
         <result property="name" column="full_name"/>
         <result property="shortName" column="short_name"/>
+        <result property="createAt" column="create_at"/>
+        <result property="updateAt" column="update_at"/>
     </resultMap>
 
     <select id="getRegionById" resultMap="regionMapping" parameterType="java.lang.Long" resultType="org.blinchik.regionsdirectory.model.Region">
@@ -23,11 +25,11 @@
     </select>
 
     <insert id="insertRegion" parameterType="org.blinchik.regionsdirectory.model.Region" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO regions (full_name, short_name) VALUES (#{name}, #{shortName})
+        INSERT INTO regions (full_name, short_name, create_at) VALUES (#{name}, #{shortName}, #{createAt})
     </insert>
 
     <update id="updateRegion" parameterType="org.blinchik.regionsdirectory.model.Region">
-        UPDATE regions SET full_name = #{name}, short_name = #{shortName} WHERE id = #{id}
+        UPDATE regions SET full_name = #{name}, short_name = #{shortName}, update_at = #{updateAt} WHERE id = #{id}
     </update>
 
     <delete id="deleteRegionById" parameterType="java.lang.Long">

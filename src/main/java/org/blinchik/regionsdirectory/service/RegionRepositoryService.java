@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -47,6 +48,7 @@ public class RegionRepositoryService {
     @CachePut(value = "regions", key = "#region.id")
     public Region addRegion(Region region) throws BadRequestException {
         try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
+            region.setCreateAt(LocalDateTime.now());
             sqlSession.getMapper(RegionMapper.class).insertRegion(region);
         } catch (PersistenceException e) {
             throw new BadRequestException("Произошла ошибка при попытке записи в базу данных, пожалуйста, проверьте свои данные.", e);
@@ -61,6 +63,7 @@ public class RegionRepositoryService {
             if (mapper.getRegionById(region.getId()) == null) {
                 return false;
             }
+            region.setUpdateAt(LocalDateTime.now());
             mapper.updateRegion(region);
         } catch (PersistenceException e) {
             throw new BadRequestException("Произошла ошибка при попытке записи в базу данных, пожалуйста, проверьте свои данные.", e);
