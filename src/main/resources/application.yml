@@ -1,8 +1,12 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:regions
+    url: jdbc:h2:mem:regdb
     driver-class-name: org.h2.Driver
     username: sa
-    password: sa
-    generate-unique-name: false
-    name: regions
+    password:
+  sql:
+    init:
+      schema-locations: classpath:db-schema.sql
+      mode: always
+  mybatis:
+    mapper-locations: classpath:mapper/*.xml
