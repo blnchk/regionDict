@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.blinchik.regionsdirectory.mapper.RegionMapper">
+
+    <select id="getRegionById" parameterType="java.util.UUID" resultType="org.blinchik.regionsdirectory.model.Region">
+        SELECT * FROM regions WHERE id = #{id}
+    </select>
+
+    <select id="getAllRegionsWithLimitAndSort" resultType="org.blinchik.regionsdirectory.model.Region">
+        SELECT * FROM regions
+        <if test="sortBy != null">
+            ORDER BY ${sortBy} <if test="order != null"> ${sortOrder} </if>
+        </if>
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
+    <select id="getAllRegions" resultType="org.blinchik.regionsdirectory.model.Region">
+        SELECT * FROM regions
+    </select>
+
+    <insert id="insertRegion" parameterType="org.blinchik.regionsdirectory.model.Region">
+        INSERT INTO regions (id, name) VALUES (#{id}, #{name})
+    </insert>
+
+    <update id="updateRegion" parameterType="org.blinchik.regionsdirectory.model.Region">
+        UPDATE regions SET name = #{name} WHERE id = #{id}
+    </update>
+
+    <delete id="deleteRegionById" parameterType="java.lang.UUID">
+        DELETE FROM regions WHERE id = #{id}
+    </delete>
+</mapper>
