@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.blinchik.regionsdirectory.mapper.RegionMapper">
 
-    <select id="getRegionById" parameterType="java.util.UUID" resultType="org.blinchik.regionsdirectory.model.Region">
+    <select id="getRegionById" parameterType="java.lang.Long" resultType="org.blinchik.regionsdirectory.model.Region">
         SELECT * FROM regions WHERE id = #{id}
     </select>
 
@@ -30,7 +30,7 @@
         UPDATE regions SET name = #{name} WHERE id = #{id}
     </update>
 
-    <delete id="deleteRegionById" parameterType="java.lang.UUID">
+    <delete id="deleteRegionById" parameterType="java.lang.Long">
         DELETE FROM regions WHERE id = #{id}
     </delete>
 </mapper>
