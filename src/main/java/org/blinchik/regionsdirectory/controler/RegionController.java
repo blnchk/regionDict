@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/regions")
@@ -31,8 +34,18 @@ public class RegionController {
                                                          @RequestParam(required = false, defaultValue = "10") String limit,
                                                          @RequestParam(required = false, defaultValue = "id") String sortBy,
                                                          @RequestParam(required = false, defaultValue = "asc") String order) {
-        List<Region> result = regionService.getAllRegionsWithLimitAndSort(page, Integer.parseInt(limit), sortBy, order);
-        return result.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(result) ;
+        Map<String, String> regionMapping = Map.of(
+                "name", "full_name",
+                "shortName", "short_name",
+                "createAt", "create_at",
+                "updateAt", "update_at",
+                "asc", "asc",
+                "desc", "desc"
+        );
+
+        List<Region> result = regionService.getAllRegionsWithLimitAndSort(page, Integer.parseInt(limit),
+                regionMapping.getOrDefault(sortBy, "id"), regionMapping.getOrDefault(order, "asc"));
+        return result.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
